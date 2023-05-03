@@ -60,6 +60,39 @@ def get_index_perf():
     index_perf = instance.get_index_perf(code)
     return jsonify(index_perf)
 
+@stock_blueprint.route('/stock/getIndexComp',methods=['POST'])
+def get_index_comp():
+    code=request.args.get('code')
+    instance=StockDataService()
+    return instance.get_index_comp(code)
+
+@stock_blueprint.route('/stock/getAvolumn',methods=['GET'])
+def get_Avolumn():
+    instance=StockDataService()
+    return str(round(instance.get_Avolumn()/1000000000000,2))+"万亿"
+
+@stock_blueprint.route('/stock/getForeign',methods=['GET'])
+def get_Foreign():
+    instance=StockDataService()
+    return str(instance.get_foreign())
+
+@stock_blueprint.route('/stock/getHotNotion',methods=['GET'])
+def getHotNotion():
+    instance=StockDataService()
+    return instance.get_hot_notion()
+
+@stock_blueprint.route('/stock/getHotStock',methods=['GET'])
+def getHotStock():
+    instance=StockDataService()
+    return str(instance.get_hot_stock())
+
+@stock_blueprint.route('/stock/getShIndex',methods=['GET'])
+def getShIndex():
+    instance=StockDataService()
+    return str(instance.get_ShIndex())+"%"
+
+
+
 
 
 

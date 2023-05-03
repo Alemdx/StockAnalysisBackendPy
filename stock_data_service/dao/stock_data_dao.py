@@ -1,4 +1,6 @@
 import pysnowball as ball
+import pywencai
+import pandas as pd
 
 # dao层获得数据
 class StockDataDao:
@@ -46,6 +48,65 @@ class StockDataDao:
         ball.set_token('xq_a_token = 80f8d831418bba697ce50569d95b51cbd92d8926')
         detail = ball.index_perf_90(code)
         return detail
+
+# 获取指数成分股票
+    def get_index_comp(self,code):
+        ball.set_token('xq_a_token = 80f8d831418bba697ce50569d95b51cbd92d8926')
+        detail=ball.index_weight_top10("399967")
+        return detail
+
+#获取A股成交额
+    def get_Avolumn(self):
+        res=pywencai.get(question='A股成交额', query_type='zhishu')
+        return res["成交额"][0]
+
+#获取美元对人民币
+    def get_foreign(self):
+        res = pywencai.get(question='人民币美元', query_type='foreign_exchange')
+        return res["外汇@最新价"][1]
+
+#同花顺热门概念
+    def get_hot_notion(self):
+        res=pywencai.get(question='同花顺概念指数中板块涨幅排名前10',query_type='zhishu')
+        selected_columns = ['指数代码', '指数简称']
+        selected_data = res.loc[:, selected_columns]
+
+
+        # 数据处理
+        data_dict = selected_data.to_dict(orient='records')
+        formatted_data = []
+        for i, d in enumerate(data_dict):
+            formatted_data.append({
+                'ID': i + 1,
+                'code': d['指数代码'].split('.')[0],
+                'name': d['指数简称'],
+            })
+        return formatted_data
+
+#获取热门股票
+    def get_hot_stock(self):
+        res=pywencai.get(question='热门股票', query_type='stock')
+
+
+        selected_columns = ['股票代码', '股票简称']
+        selected_data = res.loc[:, selected_columns]
+
+        # 数据处理
+        data_dict = selected_data.to_dict(orient='records')
+        formatted_data = []
+        for i, d in enumerate(data_dict):
+            formatted_data.append({
+                'ID': i + 1,
+                'code': d['股票代码'].split('.')[0],
+                'name': d['股票简称'],
+            })
+        return formatted_data
+
+#获取上证指数涨幅
+    def get_ShIndex(self):
+        res=pywencai.get(question='上证指数目前涨幅', query_type='zhishu')
+        return res["涨跌幅"][0]
+
 
 
 

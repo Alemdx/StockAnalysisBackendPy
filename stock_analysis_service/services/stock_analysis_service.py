@@ -5,6 +5,7 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
 from keras.optimizers import RMSprop
+import matplotlib.pyplot as plt
 import json
 
 
@@ -77,6 +78,7 @@ class StockAnalysisService:
         print("预测未来5天的最高价、最低价和收盘价：")
         for i, prices in enumerate(predicted_prices):
             print(f"Day {i + 1}: High - {prices[0]:.2f}, Low - {prices[1]:.2f}, Close - {prices[2]:.2f}")
+
 
         return json.dumps(predicted_prices.tolist())
 
