@@ -5,15 +5,31 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
 from keras.optimizers import RMSprop
-import matplotlib.pyplot as plt
 import json
+import matplotlib.pyplot as plt
+import matplotlib
+
+from sklearn.metrics import mean_squared_error
+from math import sqrt
 
 
 class StockAnalysisService:
     def __init__(self):
         self.dao = StockAnalysisDao()
 
+    def plot_results(self, y_true, y_pred, title="StockPridiction", filename="stock_prediction.png"):
+        plt.figure(figsize=(10, 5))
+        plt.plot(y_true, label='Acutal')
+        plt.plot(y_pred, label='Prediction', linestyle='--')
+        plt.xlabel('Time')
+        plt.ylabel('Price')
+        plt.title(title)
+        plt.legend()
+        plt.savefig(filename)
+        plt.close()
+
     def LSTM(self, code):
+
         # 返回的是df数据
         data=self.dao.get_kline(code)
         data_lstm = data[['timestamp', 'volume', 'open', 'high', 'low', 'close', 'chg', 'turnoverrate']]
@@ -74,11 +90,29 @@ class StockAnalysisService:
         predicted_prices = scaler.inverse_transform(full_predicted_array)[:, [2, 3, 4]]
 
 
-
         print("预测未来5天的最高价、最低价和收盘价：")
         for i, prices in enumerate(predicted_prices):
             print(f"Day {i + 1}: High - {prices[0]:.2f}, Low - {prices[1]:.2f}, Close - {prices[2]:.2f}")
 
+        # 计算预测值
+        Y_pred = model.predict(X_test)
+
+        # 准备一个与Y_pred形状匹配的零数组，插入预测值到正确的列中
+        predicted_array = np.zeros((Y_pred.shape[0], data_scaled.shape[1]))
+        predicted_array[:, [2, 3, 4]] = Y_pred
+
+        # 对预测值进行反向缩放
+        Y_pred_prices = scaler.inverse_transform(predicted_array)[:, [2, 3, 4]]
+
+        # 准备一个与Y_test形状匹配的零数组，插入实际值到正确的列中
+        true_array = np.zeros((Y_test.shape[0], data_scaled.shape[1]))
+        true_array[:, [2, 3, 4]] = Y_test
+
+        # 对实际值进行反向缩放
+        Y_true_prices = scaler.inverse_transform(true_array)[:, [2, 3, 4]]
+
+        # 绘制预测值和实际值的对比图表
+        self.plot_results(Y_true_prices[:, 2], Y_pred_prices[:, 2], title="StockPridiction", filename="stock_prediction.png")
 
         return json.dumps(predicted_prices.tolist())
 

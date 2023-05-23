@@ -69,7 +69,8 @@ def get_index_comp():
 @stock_blueprint.route('/stock/getAvolumn',methods=['GET'])
 def get_Avolumn():
     instance=StockDataService()
-    return str(round(instance.get_Avolumn()/1000000000000,2))+"万亿"
+    return str(round(float(instance.get_Avolumn())/1000000000000,2))+"万亿"
+
 
 @stock_blueprint.route('/stock/getForeign',methods=['GET'])
 def get_Foreign():
